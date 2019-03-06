@@ -32,12 +32,57 @@ export class ToDoList extends React.Component {
 		}
 	};
 
-	//delete whatever task from the ToDoList
-	deleteElementFunction = index => {
-		let removeUserCreatedArrayValue = this.state.tasks;
-		removeUserCreatedArrayValue[index].done = true;
+	deleteFunction = k => {
+		let deleteUserCreatedArrayValue = this.state.tasks;
+		deleteUserCreatedArrayValue.splice(k, 1);
+		var url = "https://assets.breatheco.de/apis/fake/todos/user/swarfman";
+
+		fetch(url, {
+			method: "PUT", // or 'POST'
+			body: JSON.stringify(deleteUserCreatedArrayValue), // data can be `string` or {object}!
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
+			.then(res => {
+				return res.text();
+			})
+			.then(response => {
+				console.log("Success:", typeof response);
+				if (response === "") {
+					this.setState({ tasks: deleteUserCreatedArrayValue });
+				}
+			})
+
+			.catch(error => console.error("Error:", error));
+	};
+
+	//Mark task as done
+	checkElementFunction = index => {
+		let checkUserCreatedArrayValue = this.state.tasks;
+		checkUserCreatedArrayValue[index].done = true;
+
+		var url = "https://assets.breatheco.de/apis/fake/todos/user/swarfman";
+
+		fetch(url, {
+			method: "PUT", // or 'PUT'
+			body: JSON.stringify(checkUserCreatedArrayValue), // data can be `string` or {object}!
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
+			.then(res => {
+				return res.text();
+			})
+			.then(response => {
+				console.log("Success:", typeof response);
+				if (response === "") {
+					this.setState({ tasks: checkUserCreatedArrayValue });
+				}
+			})
+
+			.catch(error => console.error("Error:", error));
 		//removeUserCreatedArrayValue.push(tempObject);
-		this.setState({ tasks: removeUserCreatedArrayValue });
 	};
 
 	render() {
@@ -63,13 +108,22 @@ export class ToDoList extends React.Component {
 									key={index}>
 									{elem.label}
 									{elem.done && " 	Done!"}
-									<button
-										onClick={() =>
-											this.deleteElementFunction(index)
-										}
-										id="x">
-										<i className="far fa-check-circle" />
-									</button>
+									<div className="d-flex flex-row-reverse">
+										<button
+											onClick={() =>
+												this.deleteFunction(index)
+											}
+											id="x">
+											<i className="far fa-trash-alt" />
+										</button>
+										<button
+											onClick={() =>
+												this.checkElementFunction(index)
+											}
+											id="x">
+											<i className="far fa-check-circle" />
+										</button>
+									</div>
 								</li>
 							);
 						})}
